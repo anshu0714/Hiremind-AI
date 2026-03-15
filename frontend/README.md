@@ -2,20 +2,32 @@
 
 ## Overview
 
-Frontend for **HireMind AI** (React + Vite).  
-Currently a placeholder; to be implemented with:
+Frontend for **HireMind AI** built using **React + Vite**.
 
-- React Router for navigation
-- Auth pages (Login/Register)
-- Context API for state management
-- AI-powered interview UI
+This application will provide the user interface for authentication, interview generation, AI reports, and resume PDF creation.
+
+## Current Implementation
+
+- Login page UI
+- Register page UI
+- Shared authentication form styling
+- Reusable button styles
+- React Router setup for navigation
 
 ## Planned Features
 
-- Protected routes with authentication
-- Integration with backend APIs
-- Resume PDF viewer and report display
-- AI-driven interview simulation
+- Authentication with backend APIs
+- Protected routes
+- AI-powered interview generation
+- Interview report dashboard
+- Resume PDF generation and preview
+
+## Tech Stack
+
+- React
+- Vite
+- React Router
+- SCSS for styling
 
 ## Getting Started
 
@@ -26,11 +38,10 @@ cd frontend
 # install dependencies
 npm install
 
-# run frontend dev server
+# run dev server
 npm run dev
 ```
 
 ## Notes
 
 - Frontend is under development.
-- README will be updated once UI components and services are implemented.
