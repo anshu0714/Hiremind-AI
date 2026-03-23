@@ -1,15 +1,25 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
 import "../auth.form.scss";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { loading, login } = useAuth();
 
   const togglePassword = () => setShowPassword((prev) => !prev);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const res = await login({ email, password });
+      console.log(res.message);
+    } catch (err) {
+      console.log(err.message);
+    }
   };
 
   return (
@@ -30,6 +40,9 @@ const Login = () => {
               name="email"
               type="email"
               placeholder="Enter email address"
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
               required
             />
           </div>
@@ -45,6 +58,9 @@ const Login = () => {
                 name="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter password"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
                 required
               />
 
@@ -59,8 +75,8 @@ const Login = () => {
             </div>
           </div>
 
-          <button type="submit" className="button">
-            Login
+          <button type="submit" className="button" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 

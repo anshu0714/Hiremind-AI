@@ -1,15 +1,26 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
 import "../auth.form.scss";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { loading, register } = useAuth();
 
   const togglePassword = () => setShowPassword((prev) => !prev);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const res = await register({ username, email, password });
+      console.log(res.message);
+    } catch (err) {
+      console.log(err.message);
+    }
   };
 
   return (
@@ -30,6 +41,9 @@ const Register = () => {
               name="username"
               type="text"
               placeholder="Enter username"
+              onChange={(e) => {
+                setUsername(e.target.value);
+              }}
               required
             />
           </div>
@@ -43,6 +57,9 @@ const Register = () => {
               name="email"
               type="email"
               placeholder="Enter email address"
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
               required
             />
           </div>
@@ -58,6 +75,9 @@ const Register = () => {
                 name="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter password"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
                 required
               />
 
@@ -72,8 +92,8 @@ const Register = () => {
             </div>
           </div>
 
-          <button type="submit" className="button">
-            Register
+          <button type="submit" className="button" disabled={loading}>
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
 
