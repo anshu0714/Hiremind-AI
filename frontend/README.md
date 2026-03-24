@@ -8,26 +8,68 @@ This application will provide the user interface for authentication, interview g
 
 ## Current Implementation
 
-- Login page UI
-- Register page UI
-- Shared authentication form styling
-- Reusable button styles
+### 🔐 Authentication System
+- Login & Register UI
+- Password visibility toggle (UX improvement)
+- Authentication flow integrated with backend APIs
+- Global auth state management using **React Context**
+- Custom hook (`useAuth`) for handling auth logic
+- API service layer with centralized request handling
+
+### 🎨 UI & Styling
+- Modern, responsive authentication UI
+- Shared form styles
+- Reusable button component styles
+- SCSS-based scalable styling architecture
+
+### ⚙️ Architecture
+- Feature-based folder structure
+- Clean separation of concerns:
+  - UI (pages)
+  - Logic (hooks)
+  - State (context)
+  - API layer (services)
+- Centralized Axios client with error & response handling
+- Development logger utility for debugging
+
+### 🧭 Routing
 - React Router setup for navigation
 
 ## Planned Features
 
-- Authentication with backend APIs
-- Protected routes
+- Protected routes (auth-based access control)
+- Persistent authentication (session handling)
 - AI-powered interview generation
 - Interview report dashboard
 - Resume PDF generation and preview
-
+- Global error handling UI (toasts/alerts)
+- Performance optimizations and API interceptors
+  
 ## Tech Stack
 
-- React
-- Vite
-- React Router
-- SCSS for styling
+- **React**
+- **Vite**
+- **React Router**
+- **SCSS**
+- **Axios**
+
+## Project Structure (Frontend)
+
+```bash
+src/
+│
+├── features/
+│   └── auth/
+│       ├── pages/
+│       ├── hooks/
+│       ├── context/
+│       ├── services/
+│       └── components/
+│
+├── services/        # global API client
+├── utils/           # logger and helpers
+├── styles/          # shared styles
+```
 
 ## Getting Started
 
@@ -44,4 +86,6 @@ npm run dev
 
 ## Notes
 
-- Frontend is under development.
+- Frontend is actively under development
+- Architecture is designed to be scalable and production-ready
+- Backend APIs are integrated for authentication
