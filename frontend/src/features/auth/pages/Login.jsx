@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { validateEmail, validatePassword } from "../helpers/auth.validation";
 import { useAuth } from "../hooks/useAuth";
 import "../auth.form.scss";
 
@@ -8,17 +9,36 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
   const { loading, login } = useAuth();
+  const navigate = useNavigate();
 
   const togglePassword = () => setShowPassword((prev) => !prev);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (loading) return;
+
+    setError("");
+
+    const validationError = validateEmail(email) || validatePassword(password);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     try {
-      const res = await login({ email, password });
-      console.log(res.message);
+      const payload = {
+        email: email.trim(),
+        password: password.trim(),
+      };
+      await login(payload);
+
+      navigate("/");
     } catch (err) {
-      console.log(err.message);
+      setError(err?.message || "Something went wrong");
     }
   };
 
@@ -31,6 +51,12 @@ const Login = () => {
         </header>
 
         <form className="form" onSubmit={handleSubmit} noValidate>
+          {error && (
+            <p className="error" aria-live="assertive">
+              {error}
+            </p>
+          )}
+
           {/* EMAIL */}
           <div className="input-group">
             <label htmlFor="email">Email</label>
@@ -39,11 +65,14 @@ const Login = () => {
               id="email"
               name="email"
               type="email"
+              value={email}
               placeholder="Enter email address"
               onChange={(e) => {
                 setEmail(e.target.value);
+                if (error) setError("");
               }}
               required
+              autoFocus
             />
           </div>
 
@@ -57,9 +86,11 @@ const Login = () => {
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
+                value={password}
                 placeholder="Enter password"
                 onChange={(e) => {
                   setPassword(e.target.value);
+                  if (error) setError("");
                 }}
                 required
               />

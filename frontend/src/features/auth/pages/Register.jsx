@@ -1,7 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
+import {
+  validateEmail,
+  validateUsername,
+  validatePassword,
+} from "../helpers/auth.validation";
 import "../auth.form.scss";
 
 const Register = () => {
@@ -9,17 +14,40 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
   const { loading, register } = useAuth();
+  const navigate = useNavigate();
 
   const togglePassword = () => setShowPassword((prev) => !prev);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (loading) return;
+
+    setError("");
+
+    const validationError =
+      validateUsername(username) ||
+      validateEmail(email) ||
+      validatePassword(password);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     try {
-      const res = await register({ username, email, password });
-      console.log(res.message);
+      const payload = {
+        username: username.trim(),
+        email: email.trim(),
+        password: password.trim(),
+      };
+      await register(payload);
+
+      navigate("/");
     } catch (err) {
-      console.log(err.message);
+      setError(err?.message || "Something went wrong");
     }
   };
 
@@ -32,6 +60,12 @@ const Register = () => {
         </header>
 
         <form className="form" onSubmit={handleSubmit} noValidate>
+          {error && (
+            <p className="error" aria-live="assertive">
+              {error}
+            </p>
+          )}
+
           {/* USERNAME */}
           <div className="input-group">
             <label htmlFor="username">Username</label>
@@ -40,11 +74,14 @@ const Register = () => {
               id="username"
               name="username"
               type="text"
+              value={username}
               placeholder="Enter username"
               onChange={(e) => {
                 setUsername(e.target.value);
+                if (error) setError("");
               }}
               required
+              autoFocus
             />
           </div>
 
@@ -56,9 +93,11 @@ const Register = () => {
               id="email"
               name="email"
               type="email"
+              value={email}
               placeholder="Enter email address"
               onChange={(e) => {
                 setEmail(e.target.value);
+                if (error) setError("");
               }}
               required
             />
@@ -74,9 +113,11 @@ const Register = () => {
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
+                value={password}
                 placeholder="Enter password"
                 onChange={(e) => {
                   setPassword(e.target.value);
+                  if (error) setError("");
                 }}
                 required
               />
