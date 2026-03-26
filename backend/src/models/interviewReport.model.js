@@ -45,9 +45,9 @@ const behavioralQuestionSchema = new mongoose.Schema(
 
 const skillGapSchema = new mongoose.Schema(
   {
-    skill: { 
-        ...nonEmptyString, 
-        required: [true, "Skill is required!"],
+    skill: {
+      ...nonEmptyString,
+      required: [true, "Skill is required!"],
     },
     severity: {
       type: String,
@@ -150,15 +150,10 @@ const interviewReportSchema = new mongoose.Schema(
 
 interviewReportSchema.index({ user: 1, createdAt: -1 });
 
-interviewReportSchema.pre("validate", function (next) {
-  const resume = this.resume?.trim();
-  const selfDesc = this.selfDescription?.trim();
-
-  if (!resume && !selfDesc) {
-    return next(new Error("Either resume or selfDescription is required"));
+interviewReportSchema.pre("validate", function () {
+  if (!this.resume && !this.selfDescription) {
+    throw new Error("Either resume or selfDescription is required");
   }
-
-  next();
 });
 
 const InterviewReport = mongoose.model(

@@ -10,7 +10,7 @@ const authenticate = asyncHandler(async (req, res, next) => {
   if (!token) {
     const error = new Error("Unauthorized request!");
     error.statusCode = 401;
-    throw error();
+    throw error;
   }
 
   const isBlacklisted = await TokenBlacklist.findOne({ token });
