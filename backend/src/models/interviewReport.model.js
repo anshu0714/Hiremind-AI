@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const AppError = require("../utils/error.util");
+const ERROR_TYPES = require("../utils/errorTypes.util");
 
 const nonEmptyString = {
   type: String,
@@ -152,7 +154,11 @@ interviewReportSchema.index({ user: 1, createdAt: -1 });
 
 interviewReportSchema.pre("validate", function () {
   if (!this.resume && !this.selfDescription) {
-    throw new Error("Either resume or selfDescription is required");
+    throw new AppError(
+      "Either resume or selfDescription is required",
+      400,
+      ERROR_TYPES.VALIDATION_ERROR,
+    );
   }
 });
 

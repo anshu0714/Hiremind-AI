@@ -1,5 +1,7 @@
 const Groq = require("groq-sdk");
 const z = require("zod");
+const AppError = require("../utils/error.util");
+const ERROR_TYPES = require("../utils/errorTypes.util");
 
 /** Remove markdown wrappers if AI adds them */
 function extractJSON(text) {
@@ -197,7 +199,13 @@ ${candidateSection}
 
     const text = response.choices?.[0]?.message?.content;
 
-    if (!text) throw new Error("Empty response from AI");
+    if (!text) {
+      throw new AppError(
+        "Empty response from AI",
+        500,
+        ERROR_TYPES.SERVER_ERROR,
+      );
+    }
 
     const parsed = JSON.parse(extractJSON(text));
 
@@ -207,13 +215,21 @@ ${candidateSection}
 
     if (!result.success) {
       console.error("Zod Validation Error:", result.error);
-      throw new Error("AI response structure invalid");
+      throw new AppError(
+        "AI response structure invalid",
+        500,
+        ERROR_TYPES.SERVER_ERROR,
+      );
     }
 
     return result.data;
   } catch (err) {
     console.error("AI ERROR:", err.message);
-    throw new Error(`Error creating report: ${err.message}`);
+    throw new AppError(
+      `Error creating report: ${err.message}`,
+      500,
+      ERROR_TYPES.SERVER_ERROR,
+    );
   }
 }
 

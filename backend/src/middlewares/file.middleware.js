@@ -1,4 +1,6 @@
 const multer = require("multer");
+const AppError = require("../utils/error.util");
+const ERROR_TYPES = require("../utils/errorTypes.util");
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -7,7 +9,14 @@ const upload = multer({
   },
   fileFilter: (req, file, cb) => {
     if (file.mimetype !== "application/pdf") {
-      return cb(new Error("Only PDF files allowed"), false);
+      return cb(
+        new AppError(
+          "Only PDF files are allowed",
+          400,
+          ERROR_TYPES.VALIDATION_ERROR,
+        ),
+        false,
+      );
     }
     cb(null, true);
   },

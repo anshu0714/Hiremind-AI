@@ -4,6 +4,8 @@ const { generateToken, setTokenCookie } = require("../utils/jwt.util");
 const TokenBlacklist = require("../models/tokenBlacklist.model");
 const asyncHandler = require("../utils/asyncHandler.util");
 const { sendSuccess } = require("../utils/response.util");
+const AppError = require("../utils/error.util");
+const ERROR_TYPES = require("../utils/errorTypes.util");
 
 /**
  * @desc Register a new user
@@ -14,16 +16,20 @@ const registerUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
-    const error = new Error("All fields are required!");
-    error.statusCode = 400;
-    throw error;
+    throw new AppError(
+      "All fields are required!",
+      400,
+      ERROR_TYPES.VALIDATION_ERROR,
+    );
   }
 
   const isUserExist = await User.findOne({ $or: [{ username }, { email }] });
   if (isUserExist) {
-    const error = new Error("User already exists with this username or email.");
-    error.statusCode = 409;
-    throw error;
+    throw new AppError(
+      "User already exists with this username or email.",
+      409,
+      ERROR_TYPES.AUTH_ERROR,
+    );
   }
 
   const user = await User.create({ username, email, password });
@@ -49,23 +55,29 @@ const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    const error = new Error("All fields are required!");
-    error.statusCode = 400;
-    throw error;
+    throw new AppError(
+      "All fields are required!",
+      400,
+      ERROR_TYPES.VALIDATION_ERROR,
+    );
   }
 
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
-    const error = new Error("Invalid email or password!");
-    error.statusCode = 401;
-    throw error;
+    throw new AppError(
+      "Invalid email or password!",
+      401,
+      ERROR_TYPES.AUTH_ERROR,
+    );
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    const error = new Error("Invalid email or password!");
-    error.statusCode = 401;
-    throw error;
+    throw new AppError(
+      "Invalid email or password!",
+      401,
+      ERROR_TYPES.AUTH_ERROR,
+    );
   }
 
   const token = generateToken(user._id);
@@ -85,9 +97,11 @@ const logoutUser = asyncHandler(async (req, res) => {
   const token = req.cookies.token;
 
   if (!token) {
-    const error = new Error("Unauthorized request!");
-    error.statusCode = 401;
-    throw error;
+    throw new AppError(
+      "Unauthorized request!",
+      401,
+      ERROR_TYPES.SESSION_EXPIRED,
+    );
   }
 
   const isTokenBlacklisted = await TokenBlacklist.findOne({ token });

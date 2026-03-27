@@ -3,6 +3,8 @@ const generateInterviewReport = require("../services/ai.service");
 const asyncHandler = require("../utils/asyncHandler.util");
 const { PDFParse } = require("pdf-parse");
 const { sendSuccess } = require("../utils/response.util");
+const AppError = require("../utils/error.util");
+const ERROR_TYPES = require("../utils/errorTypes.util");
 
 const isValidText = (text) => text && text.trim().length > 0;
 
@@ -28,11 +30,11 @@ const generateReport = asyncHandler(async (req, res) => {
     !isValidText(jobDescription) ||
     (!resumeContent && !isValidText(selfDescription))
   ) {
-    const error = new Error(
+    throw new AppError(
       "Job description and either resume or self description are required",
+      400,
+      ERROR_TYPES.VALIDATION_ERROR,
     );
-    error.statusCode = 400;
-    throw error;
   }
 
   const report = await generateInterviewReport({
