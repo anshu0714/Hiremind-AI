@@ -17,7 +17,7 @@ const interviewReportSchema = z.object({
         answer: z.string().min(1),
       }),
     )
-    .min(1),
+    .min(5),
 
   behavioralQuestions: z
     .array(
@@ -27,7 +27,7 @@ const interviewReportSchema = z.object({
         answer: z.string().min(1),
       }),
     )
-    .min(1),
+    .min(5),
 
   skillGap: z
     .array(
@@ -53,25 +53,22 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
+/** Safe array handling */
+function safeArray(arr) {
+  return Array.isArray(arr) ? arr.filter(Boolean) : [];
+}
+
 /** Normalize only critical inconsistencies */
 function normalizeAIResponse(data) {
+  const score = Number(data.matchScore);
+
   return {
-    matchScore:
-      data.matchScore <= 1 ? data.matchScore * 100 : (data.matchScore ?? 50),
+    matchScore: isNaN(score) ? 50 : score <= 1 ? score * 100 : score,
 
-    technicalQuestions: Array.isArray(data.technicalQuestions)
-      ? data.technicalQuestions
-      : [],
-
-    behavioralQuestions: Array.isArray(data.behavioralQuestions)
-      ? data.behavioralQuestions
-      : [],
-
-    skillGap: Array.isArray(data.skillGap) ? data.skillGap : [],
-
-    preparationPlan: Array.isArray(data.preparationPlan)
-      ? data.preparationPlan
-      : [],
+    technicalQuestions: safeArray(data.technicalQuestions),
+    behavioralQuestions: safeArray(data.behavioralQuestions),
+    skillGap: safeArray(data.skillGap),
+    preparationPlan: safeArray(data.preparationPlan),
   };
 }
 
@@ -206,7 +203,14 @@ ${candidateSection}
 
     const normalized = normalizeAIResponse(parsed);
 
-    return interviewReportSchema.parse(normalized);
+    const result = interviewReportSchema.safeParse(normalized);
+
+    if (!result.success) {
+      console.error("Zod Validation Error:", result.error);
+      throw new Error("AI response structure invalid");
+    }
+
+    return result.data;
   } catch (err) {
     console.error("AI ERROR:", err.message);
     throw new Error(`Error creating report: ${err.message}`);
