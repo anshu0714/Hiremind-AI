@@ -6,6 +6,7 @@ import Register from "@/features/auth/pages/Register";
 
 import ProtectedRoute from "@/features/auth/components/ProtectedRoute";
 import PublicRoute from "@/features/auth/components/PublicRoute";
+import InterviewForm from "./features/interview-report/pages/InterviewForm";
 
 export const routes = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ export const routes = createBrowserRouter([
           {
             path: "/",
             element: <h1>Home Page</h1>,
+          },
+          {
+            path: "/interview-report",
+            element: <InterviewForm />,
           },
         ],
       },

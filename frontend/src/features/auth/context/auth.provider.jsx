@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
     const initAuth = async () => {
       try {
         const res = await getUser();
-        setUser(res.user);
+        setUser(res.data.user);
       } catch (err) {
         setUser(null);
 

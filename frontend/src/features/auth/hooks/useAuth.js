@@ -21,7 +21,7 @@ export const useAuth = () => {
 
       const res = await loginApi(payload);
 
-      setUser(res.user);
+      setUser(res.data.user);
 
       return res;
     } finally {
