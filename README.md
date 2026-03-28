@@ -2,8 +2,13 @@
 
 ## Overview
 
-**HireMind AI** is a full-stack AI-powered interview assistant application.  
-Provides authentication, interview report generation, and resume PDF services (backend + frontend).
+It helps users:
+
+- Generate AI-based interview reports
+- Analyze resumes (PDF upload supported)
+- Prepare for interviews with structured guidance
+
+The application consists of a backend API and a frontend client.
 
 ## Backend
 
@@ -26,8 +31,25 @@ hiremind-ai/
 
 ```
 
+## Features
+
+- JWT-based authentication
+- Secure cookie-based session handling
+- AI-powered interview report generation
+- Resume upload and parsing (PDF)
+- Structured API responses
+- Clean MVC architecture
+
 ## Notes
 
-- Backend is functional with authentication and user management.
-- Frontend is under development.
-- APIs use a consistent response format with `success`, `message`, and `data`.
+- Backend is feature-complete for core functionality
+- Frontend is under active development
+- APIs follow a consistent response format:
+
+```bash
+{
+  "success": true,
+  "message": "Operation successful",
+  "data": { }
+}
+```

@@ -1,11 +1,19 @@
-export const log = (...args) => {
-  if (import.meta.env.DEV) {
-    console.log(...args);
-  }
-};
+const isDev = import.meta.env.MODE === "development";
 
-export const logError = (...args) => {
-  if (import.meta.env.DEV) {
-    console.error(...args);
-  }
+export const logger = {
+  debug: (...args) => {
+    if (isDev) console.debug("[DEBUG]", ...args);
+  },
+
+  info: (...args) => {
+    if (isDev) console.info("[INFO]", ...args);
+  },
+
+  warn: (...args) => {
+    console.warn("[WARN]", ...args);
+  },
+
+  error: (...args) => {
+    console.error("[ERROR]", ...args);
+  },
 };

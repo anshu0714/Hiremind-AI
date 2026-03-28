@@ -5,7 +5,8 @@ export const register = async (payload) => {
     const res = await api.post("/auth/register", payload);
     return handleResponse(res);
   } catch (error) {
-    return handleError(error);
+    handleError(error);
+    return;
   }
 };
 
@@ -14,7 +15,8 @@ export const login = async (payload) => {
     const res = await api.post("/auth/login", payload);
     return handleResponse(res);
   } catch (error) {
-    return handleError(error);
+    handleError(error);
+    return;
   }
 };
 
@@ -23,7 +25,8 @@ export const logout = async () => {
     const res = await api.post("/auth/logout");
     return handleResponse(res);
   } catch (error) {
-    return handleError(error);
+    handleError(error);
+    return;
   }
 };
 
@@ -32,6 +35,7 @@ export const getUser = async () => {
     const res = await api.get("/auth/user");
     return handleResponse(res);
   } catch (error) {
-    return handleError(error);
+    handleError(error);
+    return;
   }
 };

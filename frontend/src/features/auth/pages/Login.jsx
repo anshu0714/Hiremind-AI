@@ -38,7 +38,11 @@ const Login = () => {
 
       navigate("/");
     } catch (err) {
-      setError(err?.message || "Something went wrong");
+      if (err.type === "AUTH_ERROR") {
+        setError(err.message);
+      } else {
+        setError("Something went wrong");
+      }
     }
   };
 
@@ -50,7 +54,12 @@ const Login = () => {
           <p>Login to your HireMind AI account</p>
         </header>
 
-        <form className="form" onSubmit={handleSubmit} noValidate>
+        <form
+          className="form"
+          onSubmit={handleSubmit}
+          autoComplete="on"
+          noValidate
+        >
           {error && (
             <p className="error" aria-live="assertive">
               {error}
@@ -67,6 +76,7 @@ const Login = () => {
               type="email"
               value={email}
               placeholder="Enter email address"
+              autoComplete="username"
               onChange={(e) => {
                 setEmail(e.target.value);
                 if (error) setError("");
@@ -88,6 +98,7 @@ const Login = () => {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 placeholder="Enter password"
+                autoComplete="current-password"
                 onChange={(e) => {
                   setPassword(e.target.value);
                   if (error) setError("");

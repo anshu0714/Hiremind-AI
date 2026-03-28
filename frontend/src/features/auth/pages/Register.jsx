@@ -47,7 +47,11 @@ const Register = () => {
 
       navigate("/");
     } catch (err) {
-      setError(err?.message || "Something went wrong");
+      if (err.type === "AUTH_ERROR" || err.type === "VALIDATION_ERROR") {
+        setError(err.message);
+      } else {
+        setError("Something went wrong");
+      }
     }
   };
 
@@ -59,7 +63,12 @@ const Register = () => {
           <p>Start your AI interview journey</p>
         </header>
 
-        <form className="form" onSubmit={handleSubmit} noValidate>
+        <form
+          className="form"
+          onSubmit={handleSubmit}
+          autoComplete="on"
+          noValidate
+        >
           {error && (
             <p className="error" aria-live="assertive">
               {error}
@@ -76,6 +85,7 @@ const Register = () => {
               type="text"
               value={username}
               placeholder="Enter username"
+              autoComplete="username"
               onChange={(e) => {
                 setUsername(e.target.value);
                 if (error) setError("");
@@ -95,6 +105,7 @@ const Register = () => {
               type="email"
               value={email}
               placeholder="Enter email address"
+              autoComplete="email"
               onChange={(e) => {
                 setEmail(e.target.value);
                 if (error) setError("");
@@ -115,6 +126,7 @@ const Register = () => {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 placeholder="Enter password"
+                autoComplete="new-password"
                 onChange={(e) => {
                   setPassword(e.target.value);
                   if (error) setError("");

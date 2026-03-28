@@ -1,20 +1,36 @@
 import { useState, useMemo, useEffect } from "react";
 import { AuthContext } from "./auth.context";
 import { getUser } from "../services/auth.api";
-import { logError } from "@/utils/logger.util";
+import { logger } from "@/utils/logger.util";
+import { setLogoutHandler } from "@/utils/auth.util";
+import { useNavigate } from "react-router-dom";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setLogoutHandler(() => {
+      setUser(null);
+      navigate("/login");
+    });
+
+    return () => setLogoutHandler(null);
+  }, [navigate]);
+
   useEffect(() => {
     const initAuth = async () => {
       try {
         const res = await getUser();
-        setUser(res.data.user);
+        setUser(res.user);
       } catch (err) {
         setUser(null);
-        logError("Auth init error:", err.message);
+
+        if (err?.status !== 401) {
+          logger.error("AUTH_INIT_ERROR", err.message);
+        }
       } finally {
         setLoading(false);
       }
