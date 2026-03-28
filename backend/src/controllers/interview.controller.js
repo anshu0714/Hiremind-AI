@@ -100,6 +100,8 @@ const getAllReports = asyncHandler(async (req, res) => {
 const getSingleReport = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
+  validateObjectId(id, "report ID");
+
   const report = await InterviewReport.findOne({
     _id: id,
     user: req.user._id,
