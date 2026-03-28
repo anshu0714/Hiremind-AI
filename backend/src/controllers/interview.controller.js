@@ -61,4 +61,59 @@ const generateReport = asyncHandler(async (req, res) => {
   );
 });
 
-module.exports = generateReport;
+/**
+ * @desc Get all interview reports (paginated)
+ * @route GET /api/interview/
+ * @access Private
+ */
+const getAllReports = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  const skip = (page - 1) * limit;
+
+  const reports = await InterviewReport.find({ user: req.user._id })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .select("-resume -jobDescription -selfDescription");
+
+  const total = await InterviewReport.countDocuments({
+    user: req.user._id,
+  });
+
+  return sendSuccess(res, "Reports fetched successfully", {
+    reports,
+    pagination: {
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    },
+  });
+});
+
+/**
+ * @desc Get single interview report
+ * @route GET /api/interview/:id
+ * @access Private
+ */
+const getSingleReport = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const report = await InterviewReport.findOne({
+    _id: id,
+    user: req.user._id,
+  });
+
+  if (!report) {
+    throw new AppError(
+      "Interview report not found",
+      404,
+      ERROR_TYPES.NOT_FOUND,
+    );
+  }
+
+  return sendSuccess(res, "Report fetched successfully", report);
+});
+
+module.exports = { generateReport, getAllReports, getSingleReport };
