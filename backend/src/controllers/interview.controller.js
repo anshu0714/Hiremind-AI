@@ -5,6 +5,7 @@ const { PDFParse } = require("pdf-parse");
 const { sendSuccess } = require("../utils/response.util");
 const AppError = require("../utils/error.util");
 const ERROR_TYPES = require("../utils/errorTypes.util");
+const { validateObjectId } = require("../utils/validateObjectID.util");
 
 const isValidText = (text) => text && text.trim().length > 0;
 
