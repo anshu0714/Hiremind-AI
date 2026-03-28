@@ -6,7 +6,6 @@ export const register = async (payload) => {
     return handleResponse(res);
   } catch (error) {
     handleError(error);
-    return;
   }
 };
 
@@ -16,7 +15,6 @@ export const login = async (payload) => {
     return handleResponse(res);
   } catch (error) {
     handleError(error);
-    return;
   }
 };
 
@@ -26,7 +24,6 @@ export const logout = async () => {
     return handleResponse(res);
   } catch (error) {
     handleError(error);
-    return;
   }
 };
 
@@ -36,6 +33,5 @@ export const getUser = async () => {
     return handleResponse(res);
   } catch (error) {
     handleError(error);
-    return;
   }
 };

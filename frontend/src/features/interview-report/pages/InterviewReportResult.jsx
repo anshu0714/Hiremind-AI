@@ -11,6 +11,7 @@ import QuestionsSection from "../components/QuestionsSection";
 import PreparationTimeline from "../components/PreparationTimeline";
 import InputDrawer from "../components/InputDrawer";
 import useInterviewReport from "../hooks/useInterviewReport";
+import LoadingScreen from "@/components/LoadingScreen";
 
 const InterviewReportResult = () => {
   const { reportId } = useParams();
@@ -20,8 +21,14 @@ const InterviewReportResult = () => {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  if (loading) return <div className="loader-wrapper">Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading && !data) return <LoadingScreen />;
+  if (error) {
+    return (
+      <div className="error-screen">
+        <p>{error}</p>
+      </div>
+    );
+  }
   if (!data) return <div>No report found</div>;
 
   return (

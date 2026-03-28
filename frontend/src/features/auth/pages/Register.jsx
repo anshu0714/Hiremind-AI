@@ -8,6 +8,7 @@ import {
   validatePassword,
 } from "../helpers/auth.validation";
 import "../auth.form.scss";
+import { showToast } from "@/utils/toast.util";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -44,13 +45,14 @@ const Register = () => {
         password: password.trim(),
       };
       await register(payload);
+      showToast.success("Account created 🚀");
 
       navigate("/");
     } catch (err) {
       if (err.type === "AUTH_ERROR" || err.type === "VALIDATION_ERROR") {
         setError(err.message);
       } else {
-        setError("Something went wrong");
+        showToast.error("Something went wrong");
       }
     }
   };

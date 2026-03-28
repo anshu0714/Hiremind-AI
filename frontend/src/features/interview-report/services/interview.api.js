@@ -11,7 +11,6 @@ export const generateInterviewReport = async (formData) => {
     return handleResponse(res);
   } catch (error) {
     handleError(error);
-    return;
   }
 };
 
@@ -21,7 +20,6 @@ export const getAllInterviewReports = async (params = {}) => {
     return handleResponse(res);
   } catch (error) {
     handleError(error);
-    return;
   }
 };
 
@@ -31,6 +29,5 @@ export const getInterviewReportById = async (reportId) => {
     return handleResponse(res);
   } catch (error) {
     handleError(error);
-    return;
   }
 };

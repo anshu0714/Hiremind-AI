@@ -4,6 +4,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { validateEmail, validatePassword } from "../helpers/auth.validation";
 import { useAuth } from "../hooks/useAuth";
 import "../auth.form.scss";
+import { showToast } from "@/utils/toast.util";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -35,13 +36,14 @@ const Login = () => {
         password: password.trim(),
       };
       await login(payload);
+      showToast.success("Login successful 🎉");
 
       navigate("/");
     } catch (err) {
       if (err.type === "AUTH_ERROR") {
         setError(err.message);
       } else {
-        setError("Something went wrong");
+        showToast.error("Something went wrong");
       }
     }
   };

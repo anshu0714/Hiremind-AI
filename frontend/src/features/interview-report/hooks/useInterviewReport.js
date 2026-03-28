@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getInterviewReportById } from "../services/interview.api";
 import { normalizeReport } from "../utils/normalizeReport";
+import { logger } from "@/utils/logger.util";
 
 const useInterviewReport = (reportId) => {
   const [data, setData] = useState(null);
@@ -22,7 +23,7 @@ const useInterviewReport = (reportId) => {
 
         setData(normalized);
       } catch (err) {
-        console.error(err);
+        logger.error("REPORT_FETCH_ERROR", err.message);
         setError(err.message || "Something went wrong");
       } finally {
         setLoading(false);
