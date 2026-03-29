@@ -2,6 +2,7 @@ const Groq = require("groq-sdk");
 const z = require("zod");
 const AppError = require("../utils/error.util");
 const ERROR_TYPES = require("../utils/errorTypes.util");
+const { buildInterviewPrompt } = require("../prompts/interview.prompt");
 
 /** Remove markdown wrappers if AI adds them */
 function extractJSON(text) {
@@ -9,6 +10,7 @@ function extractJSON(text) {
 }
 
 const interviewReportSchema = z.object({
+  title: z.string().min(1),
   matchScore: z.number().min(0).max(100),
 
   technicalQuestions: z
@@ -65,6 +67,7 @@ function normalizeAIResponse(data) {
   const score = Number(data.matchScore);
 
   return {
+    title: data.title || "General Role",
     matchScore: isNaN(score) ? 50 : score <= 1 ? score * 100 : score,
 
     technicalQuestions: safeArray(data.technicalQuestions),
@@ -86,110 +89,10 @@ async function generateInterviewReport({
     if (selfDescription)
       candidateSection += `Self Description:\n${selfDescription}\n\n`;
 
-    const prompt = `
-You MUST return strictly valid JSON.
-
-CORE RULES:
-- Return ONLY JSON (no markdown, no explanation, no backticks)
-- Follow the structure EXACTLY
-- Do NOT stringify objects
-
-ROLE ALIGNMENT:
-- Generate output strictly based on the job description
-- Adapt completely to the role (e.g., Product Manager, Designer, Data Analyst)
-- Do NOT generate backend-specific content unless the role is backend
-
-ANSWER MODE (CRITICAL):
-- You are an INTERVIEW COACH, not the candidate
-
-STRICTLY FORBIDDEN:
-- Do NOT use candidate experience
-- Do NOT use phrases like:
-  - "I did..."
-  - "In my project..."
-  - "I worked on..."
-- Do NOT personalize answers
-
-INSTEAD:
-- Explain HOW the candidate should answer
-- Use neutral coaching language:
-  - "The candidate should explain..."
-  - "A strong answer should include..."
-  - "For example, the candidate can say..."
-
-ANSWER STRUCTURE:
-Each answer MUST include:
-1. What the interviewer is evaluating
-2. Clear step-by-step approach to answer
-3. A generic example template (NOT personal)
-
-QUALITY RULES:
-- Each answer must be 4–5 sentences minimum
-- Must be practical and structured
-- Avoid vague or generic advice
-- Include frameworks where relevant (e.g., STAR, RICE, metrics)
-- Behavioral answers MUST follow STAR format
-
-BEHAVIORAL ANSWER FORMAT (STRICT):
-- MUST be written in STAR format explicitly:
-  Situation:
-  Task:
-  Action:
-  Result:
-
-ANSWER QUALITY IMPROVEMENT:
-- Avoid repetitive phrases like "the candidate should describe"
-- Provide precise, actionable guidance
-- Keep explanations structured and concise
-
-QUESTION COUNT (STRICT):
-- Generate AT LEAST 5 technicalQuestions
-- Generate AT LEAST 5 behavioralQuestions
-
-CONSISTENCY:
-- Do not skip any field
-- Do not return empty arrays
-- Ensure all objects strictly match schema
-
-FORMAT:
-
-{
-  "matchScore": number,
-  "technicalQuestions": [
-    {
-      "question": string,
-      "intention": string,
-      "answer": string
-    }
-  ],
-  "behavioralQuestions": [
-    {
-      "question": string,
-      "intention": string,
-      "answer": string
-    }
-  ],
-  "skillGap": [
-    {
-      "skill": string,
-      "severity": "HIGH" | "MEDIUM" | "LOW"
-    }
-  ],
-  "preparationPlan": [
-    {
-      "day": number,
-      "focus": string[],
-      "tasks": string[]
-    }
-  ]
-}
-
-Job Description:
-${jobDescription}
-
-Candidate:
-${candidateSection}
-`;
+    const prompt = buildInterviewPrompt({
+      jobDescription,
+      candidateSection,
+    });
 
     const response = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
@@ -207,7 +110,13 @@ ${candidateSection}
       );
     }
 
-    const parsed = JSON.parse(extractJSON(text));
+    let parsed;
+
+    try {
+      parsed = JSON.parse(extractJSON(text));
+    } catch (err) {
+      throw new AppError("Invalid JSON from AI", 500, ERROR_TYPES.SERVER_ERROR);
+    }
 
     const normalized = normalizeAIResponse(parsed);
 
@@ -226,7 +135,7 @@ ${candidateSection}
   } catch (err) {
     console.error("AI ERROR:", err.message);
     throw new AppError(
-      `Error creating report: ${err.message}`,
+      err.message || "Error creating report",
       500,
       ERROR_TYPES.SERVER_ERROR,
     );

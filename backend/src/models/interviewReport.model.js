@@ -88,6 +88,11 @@ const preparationPlanSchema = new mongoose.Schema(
 
 const interviewReportSchema = new mongoose.Schema(
   {
+    title: {
+      ...nonEmptyString,
+      required: [true, "Job title is required!"],
+      index: true,
+    },
     jobDescription: {
       ...nonEmptyString,
       required: [true, "Job description is required!"],
