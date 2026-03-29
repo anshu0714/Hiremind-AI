@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const logger = require("./middlewares/logger.middleware");
 const errorHandler = require("./middlewares/error.middleware");
 const interviewRoutes = require("./routes/interview.route");
+const dashboardRoutes = require("./routes/dashboard.route");
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(logger);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/interview", interviewRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.use(errorHandler);
 
