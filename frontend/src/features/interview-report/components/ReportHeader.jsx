@@ -19,7 +19,7 @@ const getColorFromName = (name = "") => {
   return colors[Math.abs(hash) % colors.length];
 };
 
-const ReportHeader = ({ user, onOpenDrawer }) => {
+const ReportHeader = ({ user, title, onOpenDrawer }) => {
   const name = user?.username || "User";
   const initial = name.charAt(0).toUpperCase();
   const bgColor = useMemo(() => getColorFromName(name), [name]);
@@ -33,7 +33,7 @@ const ReportHeader = ({ user, onOpenDrawer }) => {
 
         <div>
           <h2>{name}</h2>
-          <p>Candidate</p>
+          <p>{title}</p>
         </div>
       </div>
 

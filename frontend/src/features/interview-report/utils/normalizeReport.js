@@ -2,6 +2,8 @@ export const normalizeReport = (data = {}) => {
   return {
     id: data._id,
 
+    title: data.title || "Candidate",
+
     matchScore: data.matchScore || 0,
     summary: data.summary || "",
 

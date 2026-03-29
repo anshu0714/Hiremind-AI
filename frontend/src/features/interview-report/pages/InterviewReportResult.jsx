@@ -33,7 +33,7 @@ const InterviewReportResult = () => {
 
   return (
     <div className="report-page">
-      <ReportHeader user={user} onOpenDrawer={() => setIsDrawerOpen(true)} />
+      <ReportHeader user={user} title={data.title} onOpenDrawer={() => setIsDrawerOpen(true)} />
 
       <div className="top-grid">
         <MatchSummaryCard score={data.matchScore} summary={data.summary} />
