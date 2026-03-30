@@ -20,6 +20,15 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(logger);
 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    status: "OK",
+    service: "HireMind AI API",
+    uptime: process.uptime().toFixed(2) + "s",
+    timestamp: new Date().toISOString(),
+  });
+});
 app.use("/api/auth", authRoutes);
 app.use("/api/interview", interviewRoutes);
 app.use("/api/dashboard", dashboardRoutes);
