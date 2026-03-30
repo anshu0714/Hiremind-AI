@@ -11,6 +11,7 @@ import PublicRoute from "@/features/auth/components/PublicRoute";
 import Dashboard from "./features/dashboard/pages/Dashboard";
 import InterviewForm from "./features/interview-report/pages/InterviewForm";
 import InterviewReportResult from "./features/interview-report/pages/InterviewReportResult";
+import ReportsPage from "./features/reports/pages/ReportsPage";
 
 export const routes = createBrowserRouter([
   {
@@ -37,12 +38,16 @@ export const routes = createBrowserRouter([
             element: <Dashboard />,
           },
           {
-            path: "/interview-report",
+            path: "/interview-form",
             element: <InterviewForm />,
           },
           {
             path: "/interview-report/:reportId",
             element: <InterviewReportResult />,
+          },
+          {
+            path: "/interview-reports",
+            element: <ReportsPage />,
           },
         ],
       },

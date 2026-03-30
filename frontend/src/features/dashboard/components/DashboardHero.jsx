@@ -23,7 +23,7 @@ const DashboardHero = ({ stats = {} }) => {
         <div className="hero-actions">
           <button
             className="btn primary"
-            onClick={() => navigate("/interview-report")}
+            onClick={() => navigate("/interview-form")}
           >
             Create Report
           </button>
