@@ -71,17 +71,46 @@ const getAllReports = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
 
+  const search = req.query.search?.trim() || "";
+  const minScore = parseInt(req.query.minScore, 10) || 0;
+  const sort = req.query.sort || "latest";
+
   const skip = (page - 1) * limit;
 
-  const reports = await InterviewReport.find({ user: req.user._id })
-    .sort({ createdAt: -1 })
+  const query = {
+    user: req.user._id,
+    matchScore: { $gte: minScore },
+  };
+
+  const { startDate, endDate } = req.query;
+
+  if (startDate || endDate) {
+    query.createdAt = {};
+
+    if (startDate) {
+      query.createdAt.$gte = new Date(startDate);
+    }
+
+    if (endDate) {
+      query.createdAt.$lte = new Date(endDate);
+    }
+  }
+
+  if (search) {
+    query.title = { $regex: search, $options: "i" };
+  }
+
+  const sortOption = sort === "score" ? { matchScore: -1 } : { createdAt: -1 };
+
+  const reports = await InterviewReport.find(query)
+    .sort(sortOption)
     .skip(skip)
     .limit(limit)
-    .select("-resume -jobDescription -selfDescription");
+    .select(
+      "-resume -jobDescription -selfDescription -__v -user -updatedAt -technicalQuestions -behavioralQuestions -preparationPlan -skillGap",
+    );
 
-  const total = await InterviewReport.countDocuments({
-    user: req.user._id,
-  });
+  const total = await InterviewReport.countDocuments(query);
 
   return sendSuccess(res, "Reports fetched successfully", {
     reports,
@@ -119,4 +148,70 @@ const getSingleReport = asyncHandler(async (req, res) => {
   return sendSuccess(res, "Report fetched successfully", report);
 });
 
-module.exports = { generateReport, getAllReports, getSingleReport };
+/**
+ * @desc Delete interview report
+ * @route DELETE /api/interview/:id
+ * @access Private
+ */
+const deleteReport = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  validateObjectId(id);
+
+  const report = await InterviewReport.findOneAndDelete({
+    _id: id,
+    user: req.user._id,
+  });
+
+  if (!report) {
+    throw new AppError("Report not found", 404);
+  }
+
+  return sendSuccess(res, "Report deleted successfully");
+});
+
+/**
+ * @desc Regenerate interview report
+ * @route POST /api/interview/:id/regenerate
+ * @access Private
+ */
+const regenerateReport = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const oldReport = await InterviewReport.findOne({
+    _id: id,
+    user: req.user._id,
+  });
+
+  if (!oldReport) {
+    throw new AppError("Report not found", 404);
+  }
+
+  const newReport = await generateInterviewReport({
+    jobDescription: oldReport.jobDescription,
+    resume: oldReport.resume,
+    selfDescription: oldReport.selfDescription,
+  });
+
+  const baseData = oldReport.toObject();
+
+  delete baseData._id;
+  delete baseData.createdAt;
+  delete baseData.updatedAt;
+
+  const saved = await InterviewReport.create({
+    ...baseData,
+    ...newReport,
+    user: req.user._id,
+  });
+
+  return sendSuccess(res, "Report re-generated", saved);
+});
+
+module.exports = {
+  generateReport,
+  getAllReports,
+  getSingleReport,
+  deleteReport,
+  regenerateReport,
+};

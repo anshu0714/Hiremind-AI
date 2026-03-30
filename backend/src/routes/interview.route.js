@@ -5,6 +5,8 @@ const {
   generateReport,
   getAllReports,
   getSingleReport,
+  deleteReport,
+  regenerateReport,
 } = require("../controllers/interview.controller");
 
 const interviewRoutes = express.Router();
@@ -18,5 +20,7 @@ interviewRoutes.post(
 
 interviewRoutes.get("/", authenticate, getAllReports);
 interviewRoutes.get("/:id", authenticate, getSingleReport);
+interviewRoutes.delete("/:id", authenticate, deleteReport);
+interviewRoutes.post("/:id/regenerate", authenticate, regenerateReport);
 
 module.exports = interviewRoutes;
