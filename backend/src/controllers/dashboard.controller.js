@@ -21,9 +21,8 @@ const getDashboard = asyncHandler(async (req, res) => {
   const bestScore = Math.max(...scores, 0);
 
   // SCORE RANGE
-  const minScore = Math.min(...scores, 0);
-  const maxScore = Math.max(...scores, 0);
-  const scoreRange = `${minScore}% - ${maxScore}%`;
+  const minScore = scores.length ? Math.min(...scores) : 0;
+  const maxScore = scores.length ? Math.max(...scores) : 0;
 
   // REPORTS THIS WEEK
   const now = new Date();
@@ -49,7 +48,10 @@ const getDashboard = asyncHandler(async (req, res) => {
     stats: {
       avgScore: Math.round(avgScore),
       bestScore,
-      scoreRange,
+      scoreRange: {
+        min: minScore,
+        max: maxScore,
+      },
       totalReports: total,
       reportsThisWeek,
     },

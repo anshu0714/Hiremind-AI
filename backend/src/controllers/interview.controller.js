@@ -6,6 +6,7 @@ const { sendSuccess } = require("../utils/response.util");
 const AppError = require("../utils/error.util");
 const ERROR_TYPES = require("../utils/errorTypes.util");
 const { validateObjectId } = require("../utils/validateObjectID.util");
+const { generateInterviewPDF } = require("../services/pdf.service");
 
 const isValidText = (text) => text && text.trim().length > 0;
 
@@ -208,10 +209,33 @@ const regenerateReport = asyncHandler(async (req, res) => {
   return sendSuccess(res, "Report re-generated", saved);
 });
 
+/**
+ * @desc Download interview report as PDF
+ * @route GET /api/interview/:id/download
+ * @access Private
+ */
+const downloadReport = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  validateObjectId(id, "report ID");
+
+  const report = await InterviewReport.findOne({
+    _id: id,
+    user: req.user._id,
+  });
+
+  if (!report) {
+    throw new AppError("Report not found", 404, ERROR_TYPES.NOT_FOUND);
+  }
+
+  generateInterviewPDF(res, report, `report-${id}`);
+});
+
 module.exports = {
   generateReport,
   getAllReports,
   getSingleReport,
   deleteReport,
   regenerateReport,
+  downloadReport,
 };
