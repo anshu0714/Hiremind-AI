@@ -9,9 +9,9 @@ import ProtectedRoute from "@/features/auth/components/ProtectedRoute";
 import PublicRoute from "@/features/auth/components/PublicRoute";
 
 import Dashboard from "./features/dashboard/pages/Dashboard";
-import InterviewForm from "./features/interview-report/pages/InterviewForm";
-import InterviewReportResult from "./features/interview-report/pages/InterviewReportResult";
-import ReportsPage from "./features/reports/pages/ReportsPage";
+import InterviewForm from "./features/interview/pages/InterviewForm";
+import InterviewReportResult from "./features/interview/pages/InterviewReportResult";
+import ReportsPage from "./features/interview/pages/ReportsPage";
 
 export const routes = createBrowserRouter([
   {

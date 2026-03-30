@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import FileUpload from "../components/FileUpload";
-import TextAreaBox from "../components/TextAreaBox";
+import FileUpload from "../components/form/FileUpload";
+import TextAreaBox from "../components/form/TextAreaBox";
 import { generateInterviewReport } from "../services/interview.api";
 import { showToast } from "@/utils/toast.util";
 import "../styles/interview.form.scss";

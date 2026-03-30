@@ -23,7 +23,7 @@ const Dashboard = () => {
       <div className="stats-grid">
         <StatsCard label="Avg Score" value={stats.avgScore} />
         <StatsCard label="Best Score" value={stats.bestScore} />
-        <StatsCard label="Range" value={stats.scoreRange} type="text" />
+        <StatsCard label="Range" value={stats.scoreRange} type="range" />
       </div>
 
       {/* Main Grid */}

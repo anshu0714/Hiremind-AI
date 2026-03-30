@@ -7,7 +7,7 @@ import {
   validateUsername,
   validatePassword,
 } from "../helpers/auth.validation";
-import "../auth.form.scss";
+import "../styles/auth.form.scss";
 import { showToast } from "@/utils/toast.util";
 
 const Register = () => {

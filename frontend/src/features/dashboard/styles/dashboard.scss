@@ -176,7 +176,29 @@
   }
 }
 
-/* PROGRESS */
+/* STATS RANGE */
+.range-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.range-bar {
+  position: relative;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.range-fill {
+  position: absolute;
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #6366f1);
+  border-radius: 10px;
+}
+
+/* STATS PROGRESS */
 .progress-bar {
   margin-top: 12px;
   height: 6px;
@@ -211,7 +233,9 @@
   top: 50%;
   right: 10px;
   transform: translateY(-50%);
+}
 
+.stats-card.positive .progress-indicator {
   background: #4ade80;
 }
 
@@ -262,6 +286,17 @@
     font-size: 12px;
     color: #94a3b8;
   }
+}
+
+/* REPORTS INTERACTION */
+.report-item.clickable {
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.report-item.clickable:hover {
+  transform: scale(1.02);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 /* CHART */

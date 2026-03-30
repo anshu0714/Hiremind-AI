@@ -1,9 +1,9 @@
 import useReports from "../hooks/useReports";
-import ReportsHeader from "../components/ReportsHeader";
-import ReportsFilters from "../components/ReportsFilters";
-import ReportsGrid from "../components/ReportsGrid";
-import ReportsSkeleton from "../components/ReportsSkeleton";
-import Pagination from "../components/Pagination";
+import ReportsHeader from "../components/list/ReportsHeader";
+import ReportsFilters from "../components/list/ReportsFilters";
+import ReportsGrid from "../components/list/ReportsGrid";
+import ReportsSkeleton from "../components/list/ReportsSkeleton";
+import Pagination from "../components/list/Pagination";
 import "../styles/reports.page.scss";
 
 const ReportsPage = () => {

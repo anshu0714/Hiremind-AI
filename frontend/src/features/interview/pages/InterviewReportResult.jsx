@@ -4,12 +4,12 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 
 import "../styles/interview.report.scss";
 
-import ReportHeader from "../components/ReportHeader";
-import MatchSummaryCard from "../components/MatchSummaryCard";
-import SkillGapCard from "../components/SkillGapCard";
-import QuestionsSection from "../components/QuestionsSection";
-import PreparationTimeline from "../components/PreparationTimeline";
-import InputDrawer from "../components/InputDrawer";
+import ReportHeader from "../components/report/ReportHeader";
+import MatchSummaryCard from "../components/report/MatchSummaryCard";
+import SkillGapCard from "../components/report/SkillGapCard";
+import QuestionsSection from "../components/report/QuestionsSection";
+import PreparationTimeline from "../components/report/PreparationTimeline";
+import InputDrawer from "../components/report/InputDrawer";
 import useInterviewReport from "../hooks/useInterviewReport";
 import LoadingScreen from "@/components/LoadingScreen";
 

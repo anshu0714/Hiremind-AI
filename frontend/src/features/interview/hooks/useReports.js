@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getReports } from "../services/reports.api";
+import { getAllInterviewReports } from "../services/interview.api";
 import toast from "react-hot-toast";
 import { logger } from "@/utils/logger.util";
 
@@ -20,7 +20,7 @@ const useReports = () => {
       try {
         setLoading(true);
 
-        const res = await getReports({
+        const res = await getAllInterviewReports({
           page,
           limit: 10,
           search: filters.search,

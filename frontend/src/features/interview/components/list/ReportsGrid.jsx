@@ -2,10 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { Eye, MoreVertical } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
-  deleteReport,
-  getReports,
-  regenerateReport,
-} from "../services/reports.api";
+  deleteInterviewReport,
+  getAllInterviewReports,
+  regenerateInterviewReport,
+} from "../../services/interview.api";
 import { showToast } from "@/utils/toast.util";
 import { logger } from "@/utils/logger.util";
 
@@ -20,7 +20,7 @@ const ReportsGrid = ({ reports, setReports }) => {
 
     try {
       setLoadingId(id);
-      await deleteReport(id);
+      await deleteInterviewReport(id);
 
       setReports((prev) => prev.filter((r) => r._id !== id));
       showToast.success("Report deleted");
@@ -38,9 +38,9 @@ const ReportsGrid = ({ reports, setReports }) => {
 
     try {
       setLoadingId(id);
-      await regenerateReport(id);
+      await regenerateInterviewReport(id);
 
-      const res = await getReports();
+      const res = await getAllInterviewReports();
       setReports(res.data.reports);
 
       showToast.success("Report regenerated");

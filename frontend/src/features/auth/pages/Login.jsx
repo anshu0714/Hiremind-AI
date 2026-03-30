@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { validateEmail, validatePassword } from "../helpers/auth.validation";
 import { useAuth } from "../hooks/useAuth";
-import "../auth.form.scss";
+import "../styles/auth.form.scss";
 import { showToast } from "@/utils/toast.util";
 
 const Login = () => {

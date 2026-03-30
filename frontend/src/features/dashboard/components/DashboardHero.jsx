@@ -30,7 +30,7 @@ const DashboardHero = ({ stats = {} }) => {
 
           <button
             className="btn ghost"
-            onClick={() => window.scrollTo({ top: 500, behavior: "smooth" })}
+            onClick={() => navigate("/interview-reports")}
           >
             View Reports
           </button>

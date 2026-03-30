@@ -1,11 +1,40 @@
 const StatsCard = ({ label, value, type = "percentage" }) => {
-  const numericValue = parseFloat(value);
-  const isNumeric = !isNaN(numericValue);
+  const isRange = type === "range";
+  const isText = type === "text";
 
-  const isNegative = numericValue < 0;
-  const isPositive = numericValue > 0;
+  // Range handling
+  if (isRange && value) {
+    const { min = 0, max = 0 } = value;
 
-  const progress = Math.min(Math.abs(numericValue), 100);
+    return (
+      <div className="stats-card glass">
+        <p className="stats-label">{label}</p>
+
+        <h2 className="range-text">
+          {min}% - {max}%
+        </h2>
+
+        <div className="range-bar">
+          <div
+            className="range-fill"
+            style={{
+              left: `${min}%`,
+              width: `${max - min}%`,
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Numeric handling
+  const numericValue = !isText ? parseFloat(value) : null;
+  const isNumeric = !isText && !isNaN(numericValue);
+
+  const isNegative = isNumeric && numericValue < 0;
+  const isPositive = isNumeric && numericValue > 0;
+
+  const progress = isNumeric ? Math.min(Math.abs(numericValue), 100) : 0;
 
   return (
     <div
@@ -20,7 +49,7 @@ const StatsCard = ({ label, value, type = "percentage" }) => {
           isNegative ? "negative-text" : isPositive ? "positive-text" : ""
         }`}
       >
-        {isNumeric && type !== "text" ? `${progress}%` : value}
+        {isText ? value : `${progress}%`}
       </h2>
 
       {/* Progress */}
