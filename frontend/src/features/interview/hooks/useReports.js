@@ -28,8 +28,12 @@ const useReports = () => {
           sort: filters.sort,
         });
 
-        setReports(res.data.reports);
-        setPagination(res.data.pagination);
+        if (!res || !res.data) {
+          throw new Error("Invalid response");
+        }
+
+        setReports(res.data.reports || []);
+        setPagination(res.data.pagination || {});
       } catch (err) {
         logger.error("Failed to load reports", err);
         toast.error("Failed to load reports");

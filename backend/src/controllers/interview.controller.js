@@ -47,6 +47,10 @@ const generateReport = asyncHandler(async (req, res) => {
       : undefined,
   });
 
+  if (report.title === "Invalid Input") {
+    return sendSuccess(res, "Invalid job description", report, 200);
+  }
+
   const interviewReport = await InterviewReport.create({
     user: req.user._id,
     resume: resumeContent,

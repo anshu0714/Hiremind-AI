@@ -37,7 +37,6 @@ const InterviewForm = () => {
 
       if (file) formData.append("resume", file);
       if (selfDesc.trim()) formData.append("selfDescription", selfDesc.trim());
-
       formData.append("jobDescription", jobDesc.trim());
 
       toastId = showToast.loading("Generating report...");
@@ -46,14 +45,24 @@ const InterviewForm = () => {
 
       showToast.dismiss(toastId);
 
-      if (!res) throw new Error("Failed to generate report");
+      if (!res || !res.data) {
+        throw new Error("Failed to generate report");
+      }
+
+      const report = res.data;
+
+      if (report.title === "Invalid Input") {
+        showToast.error("Please enter a valid job description");
+        return;
+      }
 
       showToast.success("Report generated 🚀");
 
-      navigate(`/interview-report/${res.data._id}`);
+      navigate(`/interview-report/${report._id}`);
     } catch (err) {
       logger.error("GENERATE_REPORT_ERROR", err.message);
       showToast.dismiss(toastId);
+      showToast.error(err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

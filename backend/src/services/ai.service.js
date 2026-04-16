@@ -10,47 +10,39 @@ function extractJSON(text) {
 }
 
 const interviewReportSchema = z.object({
-  title: z.string().min(1),
+  title: z.string(),
   matchScore: z.number().min(0).max(100),
 
-  technicalQuestions: z
-    .array(
-      z.object({
-        question: z.string().min(1),
-        intention: z.string().min(1),
-        answer: z.string().min(1),
-      }),
-    )
-    .min(5),
+  technicalQuestions: z.array(
+    z.object({
+      question: z.string(),
+      intention: z.string(),
+      answer: z.string(),
+    }),
+  ),
 
-  behavioralQuestions: z
-    .array(
-      z.object({
-        question: z.string().min(1),
-        intention: z.string().min(1),
-        answer: z.string().min(1),
-      }),
-    )
-    .min(5),
+  behavioralQuestions: z.array(
+    z.object({
+      question: z.string(),
+      intention: z.string(),
+      answer: z.string(),
+    }),
+  ),
 
-  skillGap: z
-    .array(
-      z.object({
-        skill: z.string().min(1),
-        severity: z.enum(["HIGH", "MEDIUM", "LOW"]),
-      }),
-    )
-    .min(1),
+  skillGap: z.array(
+    z.object({
+      skill: z.string(),
+      severity: z.enum(["HIGH", "MEDIUM", "LOW"]),
+    }),
+  ),
 
-  preparationPlan: z
-    .array(
-      z.object({
-        day: z.number().int().min(1),
-        focus: z.array(z.string().min(1)).min(1),
-        tasks: z.array(z.string().min(1)).min(1),
-      }),
-    )
-    .min(1),
+  preparationPlan: z.array(
+    z.object({
+      day: z.number(),
+      focus: z.array(z.string()),
+      tasks: z.array(z.string()),
+    }),
+  ),
 });
 
 const groq = new Groq({
@@ -62,19 +54,71 @@ function safeArray(arr) {
   return Array.isArray(arr) ? arr.filter(Boolean) : [];
 }
 
-/** Normalize only critical inconsistencies */
+/** 🔥 Extract clean role title (fallback safety) */
+function cleanTitle(title) {
+  if (!title) return "General Role";
+
+  return title
+    .replace(/interview report/gi, "")
+    .replace(/report/gi, "")
+    .replace(/analysis/gi, "")
+    .replace(/match/gi, "")
+    .trim()
+    .split(" ")
+    .slice(0, 4)
+    .join(" ");
+}
+
+/** Normalize */
 function normalizeAIResponse(data) {
   const score = Number(data.matchScore);
 
   return {
-    title: data.title || "General Role",
-    matchScore: isNaN(score) ? 50 : score <= 1 ? score * 100 : score,
+    title: cleanTitle(data.title),
+    matchScore: isNaN(score) ? 0 : score <= 1 ? score * 100 : score,
 
     technicalQuestions: safeArray(data.technicalQuestions),
     behavioralQuestions: safeArray(data.behavioralQuestions),
     skillGap: safeArray(data.skillGap),
     preparationPlan: safeArray(data.preparationPlan),
   };
+}
+
+/** Business rules */
+function enforceBusinessRules(data) {
+  if (data.title === "Invalid Input") {
+    return {
+      title: "Invalid Input",
+      matchScore: 0,
+      technicalQuestions: [],
+      behavioralQuestions: [],
+      skillGap: [],
+      preparationPlan: [],
+    };
+  }
+
+  if (data.technicalQuestions.length < 5) data.technicalQuestions = [];
+  if (data.behavioralQuestions.length < 5) data.behavioralQuestions = [];
+
+  return data;
+}
+
+function isClearlyInvalid(text) {
+  if (!text || text.trim().length < 15) return true;
+
+  const nonLetterRatio = text.replace(/[a-zA-Z\s]/g, "").length / text.length;
+
+  if (nonLetterRatio > 0.3) return true;
+
+  const words = text.trim().split(/\s+/);
+
+  if (words.length < 3) return true;
+
+  const readableWords = words.filter((w) => /[aeiouAEIOU]/.test(w));
+
+  if (readableWords.length < 2) return true;
+
+  return false;
 }
 
 async function generateInterviewReport({
@@ -84,6 +128,17 @@ async function generateInterviewReport({
 }) {
   try {
     let candidateSection = "";
+
+    if (isClearlyInvalid(jobDescription)) {
+      return {
+        title: "Invalid Input",
+        matchScore: 0,
+        technicalQuestions: [],
+        behavioralQuestions: [],
+        skillGap: [],
+        preparationPlan: [],
+      };
+    }
 
     if (resume) candidateSection += `Resume:\n${resume}\n\n`;
     if (selfDescription)
@@ -114,13 +169,14 @@ async function generateInterviewReport({
 
     try {
       parsed = JSON.parse(extractJSON(text));
-    } catch (err) {
+    } catch {
       throw new AppError("Invalid JSON from AI", 500, ERROR_TYPES.SERVER_ERROR);
     }
 
     const normalized = normalizeAIResponse(parsed);
+    const finalData = enforceBusinessRules(normalized);
 
-    const result = interviewReportSchema.safeParse(normalized);
+    const result = interviewReportSchema.safeParse(finalData);
 
     if (!result.success) {
       console.error("Zod Validation Error:", result.error);
@@ -133,10 +189,12 @@ async function generateInterviewReport({
 
     return result.data;
   } catch (err) {
-    console.error("AI ERROR:", err.message);
+    console.error("FULL ERROR:", err);
+    console.error("STACK:", err.stack);
+
     throw new AppError(
       err.message || "Error creating report",
-      500,
+      err.statusCode || 500,
       ERROR_TYPES.SERVER_ERROR,
     );
   }

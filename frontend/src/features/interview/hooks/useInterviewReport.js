@@ -17,8 +17,9 @@ const useInterviewReport = (reportId) => {
 
         const res = await getInterviewReportById(reportId);
 
-        if (!res) throw new Error("No data received");
-
+        if (!res || !res.data) {
+          throw new Error("No data received");
+        }
         const normalized = normalizeReport(res.data);
 
         setData(normalized);
