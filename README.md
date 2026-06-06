@@ -121,7 +121,7 @@ hiremind-ai/
 
 ### Backend
 
-- Production-ready for core features
+- Stable for core workflows and deployed for public use.
 - Handles:
   - Auth
   - AI processing
@@ -161,8 +161,8 @@ hiremind-ai/
 ## 🧠 Engineering Learnings
 
 - Handling unreliable AI outputs using validation, normalization, and defensive parsing
-- Preventing database corruption through strict schema enforcement (Zod + sanitization)
-- Designing scalable APIs using backend-driven filtering, pagination, and aggregation
+- Preventing invalid data persistence through schema validation and normalization.
+- Designing maintainable APIs using backend-driven filtering, pagination, and aggregation.
 - Managing authentication using centralized interceptors and session-aware logic
 - Debugging real-world production issues:
   - Duplicate key errors (MongoDB)
